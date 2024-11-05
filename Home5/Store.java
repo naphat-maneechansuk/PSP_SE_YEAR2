@@ -87,6 +87,115 @@ public class Store {
             }
         }
     }
+
+    public void showMyCard(Store store,String email){
+        int number = 1;
+        String role = store.getMemberEmail(email).checkRole();
+        double totalPrice = 0;
+        double totalPriceTrue = 0;
+        System.out.printf("%-3s %-15s %-15s %-19s\n", "#", "Name","Quantity","Totals (฿)" );
+        int size = store.carts.size();
+        double discount = 0;
+        if (role.equals("Silver")){
+            discount =  34.00 * 0.05;
+        }else if (role.equals("Gold")){
+            discount =  34.00 * 0.1;
+        }else {
+            discount = 1;
+        }
+        for (int i = 0; i < size; i++) {
+           // System.out.println(i);
+            if (store.getMemberEmail(email).getId().equals(store.carts.get(i).getIdMember())) {
+                //System.out.println("aaaaaa");
+               // System.out.println(store.getProductId(store.carts.get(i).getIdProduct()));
+                String nameProduct = store.getProductId(store.carts.get(i).getIdProduct()).getName();
+               // System.out.println(nameProduct);
+                //System.out.println("bbbb");
+                System.out.printf("%-4d", number);
+                //System.out.println("cccccccc");
+                System.out.printf("%-15s %-15s",nameProduct,store.carts.get(i).getQuantity());
+              //  System.out.println("dddddd");
+                 double d = store.carts.get(i).getPrice(store) * discount;
+                 double c = store.carts.get(i).getPrice(store) ;
+                String format = String.format("%.2f", d);
+                String format1 = String.format("%.2f", c);
+                if (role.equals("Silver")||role.equals("Gold")) {
+                    System.out.printf("%-20s\n", format + " (" + format1 + ")");
+                }else {
+                    System.out.printf("%-19s\n", c);
+                }
+               // System.out.println("eeeeee");
+                number++;
+                totalPrice += store.carts.get(i).getPrice(store) * discount;
+                totalPriceTrue += store.carts.get(i).getPrice(store);
+            }
+        }
+        System.out.println("====================");
+        System.out.print("Price: ");
+        if (role.equals("Silver")||role.equals("Gold") ){
+            System.out.printf("%.2f", +totalPrice + " ("+totalPriceTrue+")");
+        }else {
+            System.out.printf("%.2f", +totalPrice );
+        }
+        System.out.println(" Baht");
+        System.out.println("=======================");
+
+    }
+    public void checkoutCard(Store store,String email){
+        int number = 1;
+        String role = store.getMemberEmail(email).checkRole();
+        double totalPrice = 0;
+        double totalPriceTrue = 0;
+        System.out.printf("%-3s %-15s %-15s %-19s\n", "#", "Name","Quantity","Totals (฿)" );
+        int size = store.carts.size();
+        double discount = 0;
+        if (role.equals("Silver")){
+            discount =  34.00 * 0.05;
+        }else if (role.equals("Gold")){
+            discount =  34.00 * 0.1;
+        }else {
+            discount = 1;
+        }
+        for (int i = 0; i < size; i++) {
+            // System.out.println(i);
+            if (store.getMemberEmail(email).getId().equals(store.carts.get(i).getIdMember())) {
+                //System.out.println("aaaaaa");
+                // System.out.println(store.getProductId(store.carts.get(i).getIdProduct()));
+                String nameProduct = store.getProductId(store.carts.get(i).getIdProduct()).getName();
+                // System.out.println(nameProduct);
+                //System.out.println("bbbb");
+                System.out.printf("%-4d", number);
+                //System.out.println("cccccccc");
+                System.out.printf("%-15s %-15s",nameProduct,store.carts.get(i).getQuantity());
+                //  System.out.println("dddddd");
+                double d = store.carts.get(i).getPrice(store) * discount;
+                double c = store.carts.get(i).getPrice(store) ;
+                String format = String.format("%.2f", d);
+                String format1 = String.format("%.2f", c);
+                if (role.equals("Silver")||role.equals("Gold")) {
+                    System.out.printf("%-20s\n", format + " (" + format1 + ")");
+                }else {
+                    System.out.printf("%-19s\n", format1);
+                }
+                // System.out.println("eeeeee");
+                number++;
+                totalPrice += store.carts.get(i).getPrice(store) * discount;
+                totalPriceTrue += store.carts.get(i).getPrice(store);
+            }
+        }
+        System.out.println("====================");
+        System.out.print("Price: ");
+        if (role.equals("Silver")||role.equals("Gold") ){
+            System.out.printf("%.2f", +totalPrice + " ("+totalPriceTrue+")");
+        }else {
+            System.out.printf("%.2f", +totalPrice );
+        }
+        System.out.println();
+        System.out.println("Shipping Fee: 50.00\n");
+        System.out.printf("%.2f",totalPrice+50);
+        System.out.println("=======================");
+
+    }
     //End CART--------------------------------------------------------------------------------------------------------------------------
     //Category--------------------------------------------------------------------------------------------------------------------------
     //เพิ่ม category
@@ -135,6 +244,14 @@ public class Store {
             addProduct(new Product(data[0], data[1], data[2], data[3], data[4]));
         }
     }
+    public Product getProductId(String id){
+        for (int i = 0; i <products.size(); i++) {
+            if (products.get(i).getId().equals(id)){
+                return products.get(i);
+            }
+        }
+        return null;
+    }
 
     //โช product ด้วยตำเเหน่ง
     public void showNormalProduct(Store store, int index, String role) {
@@ -159,6 +276,32 @@ public class Store {
             System.out.printf("%-4d", number); // Print product number
             store.products.get(i).toStringProduct(role); // Call method to print product details
             number++; // Increment product number
+        }
+    }
+    public void searchProduct(Store store, String role ,String nameProduct) {
+        // Print table header
+        int countCheck = 0;
+        int namelenght = nameProduct.length();
+        System.out.printf("%-3s %-15s %-19s %-15s\n", "#", "Name", "Price (฿)", "Quantity");
+        int number = 1;
+        // Iterate through the products
+        for (int i = 0; i < store.products.size(); i++) {
+            if(nameProduct.equalsIgnoreCase(store.products.get(i).getName().substring(0,namelenght))) {
+                System.out.printf("%-4d", number); // Print product number
+                store.products.get(i).toStringProduct(role); // Call method to print product details
+                number++; // Increment product number
+                countCheck++;
+            }
+        }
+        if (countCheck==0){
+            System.out.print("====================\n" +
+                    "Search Product\n" +
+                    "====================\n" +
+                    "Type Product Name: ");
+            System.out.println(nameProduct);
+            System.out.println("====================\n" +
+                    "Sorry Product Not found\n" +
+                    "====================\n");
         }
     }
     public void productDESC(Store store , int index, String role){
@@ -197,7 +340,7 @@ public class Store {
     }
     //โชกรณีเเก้ไขสินค้าสำเร็จ
     public void editProduct(Store store,int index,String name,String quantity) throws IOException {
-        PrintWriter writer = new PrintWriter(new FileWriter("D:\\java\\Data_1\\Test\\src\\Home5\\PRODUCT.txt"));
+        PrintWriter writer = new PrintWriter(new FileWriter("C:\\Users\\informatics\\IdeaProjects\\Test\\src\\Home5\\PRODUCT.txt"));
         String oldName = store.products.get(index - 1).getName();
         boolean check = true;
         if (!quantity.equals("-")) {
@@ -354,7 +497,7 @@ public class Store {
         } else {
                 displayEditMemberIncorrect(firstname, lastname, email, phone);
             }
-        PrintWriter writer = new PrintWriter(new FileWriter("D:\\java\\Data_1\\Test\\src\\Home5\\MEMBER.txt"));
+        PrintWriter writer = new PrintWriter(new FileWriter("C:\\Users\\informatics\\IdeaProjects\\Test\\src\\Home5\\MEMBER.txt"));
         for (int i = 0; i < store.members.size(); i++) {
             writer.println(store.getMemberIndex(i).getId() + "\t" + store.getMemberIndex(i).getFirstname() + "\t" + store.getMemberIndex(i).getLastname() + "\t" +
                     store.getMemberIndex(i).getEmail() + "\t" + store.getMemberIndex(i).getPassword() + "\t" + store.getMemberIndex(i).getPhone() + "\t" +
@@ -409,7 +552,7 @@ public class Store {
         }else {
             displayAddMemberIncorrect(firstname, lastname, email, phone);
         }
-        PrintWriter writer = new PrintWriter(new FileWriter("D:\\java\\Data_1\\Test\\src\\Home5\\MEMBER.txt"));
+        PrintWriter writer = new PrintWriter(new FileWriter("C:\\Users\\informatics\\IdeaProjects\\Test\\src\\Home5\\MEMBER.txt"));
         for (int i = 0; i < store.members.size(); i++) {
             writer.println(store.getMemberIndex(i).getId() + "\t" + store.getMemberIndex(i).getFirstname() + "\t" + store.getMemberIndex(i).getLastname() + "\t" +
                     store.getMemberIndex(i).getEmail() + "\t" + store.getMemberIndex(i).getPassword() + "\t" + store.getMemberIndex(i).getPhone() + "\t" +
@@ -423,9 +566,9 @@ public class Store {
     //Store--------------------------------------------------------------------------------------------------------------------------
     public void playStore() throws IOException {
         for (;;){
-            File fileCategoly = new File("D:\\java\\Data_1\\Test\\src\\Home5\\CATEGORY.txt");
-            File fileProduct = new File("D:\\java\\Data_1\\Test\\src\\Home5\\PRODUCT.txt");
-            File fileMember = new File("D:\\java\\Data_1\\Test\\src\\Home5\\MEMBER.txt");
+            File fileCategoly = new File("C:\\Users\\informatics\\IdeaProjects\\Test\\src\\Home5\\CATEGORY.txt");
+            File fileProduct = new File("C:\\Users\\informatics\\IdeaProjects\\Test\\src\\Home5\\PRODUCT.txt");
+            File fileMember = new File("C:\\Users\\informatics\\IdeaProjects\\Test\\src\\Home5\\MEMBER.txt");
             Scanner keyboard = new Scanner(System.in);
             //display #1
             Store store = new Store();
@@ -550,7 +693,8 @@ public class Store {
             store.showInfoMember(email);
             System.out.print("1. Show Category\n" +
                     "2. Order Product\n" +
-                    "3. Logout\n" +
+                    "3. Search Product\n"+
+                    "4. Logout\n" +
                     "====================\n" +
                     "Select (1-3) : ");
             input_select = keyboard.next();
@@ -563,7 +707,10 @@ public class Store {
                 //display #orderProduct
                 //**************
                 store.displayOrderProduct(store,email);
-            }else if (input_select.equals("3")) {
+            } else if (input_select.equals("3")){
+
+                store.displaySearchProduct_1(store,email);
+            } else if (input_select.equals("4")) {
                 break;
             }
         }
@@ -807,7 +954,7 @@ public class Store {
         // ล้างรถเข็น
         store.carts.clear();
         // อ่านไฟล์ CART เเล้วเก็บไว้ใน store
-        File fileCart = new File("D:\\java\\Data_1\\Test\\src\\Home5\\CART.txt");
+        File fileCart = new File("C:\\Users\\informatics\\IdeaProjects\\Test\\src\\Home5\\CART.txt");
         store.addAllCart(fileCart);
         Scanner keyboard = new Scanner(System.in);
         String input_select;
@@ -815,9 +962,10 @@ public class Store {
         store.showAllProduct(store, store.getMemberEmail(email).checkRole());
         System.out.println("===========================================");
         System.out.println("Enter the product number followed by the quantity");
-        System.out.println("1. How to Order\n" +
-                "2. List Products\n" +
-                "Q. Exit");
+        System.out.println( "1. How to Order\n" +
+                            "2. List Products\n" +
+                            "3. My Cart\n" +
+                            "Q. Exit");
         for (;;){
             try {
 //                for (int i = 0; i < store.carts.size(); i++) {
@@ -836,6 +984,26 @@ public class Store {
                         System.out.println("=========== SE STORE's Products ===========");
                         store.showAllProduct(store, store.getMemberEmail(email).checkRole());
                         System.out.println("===========================================");
+                    }else if (input_select.equals("3")) {
+                        for (; ; ) {
+                            System.out.println("====================\n" +
+                                    "My Cart\n" +
+                                    "====================");
+                            store.showMyCard(store, email);
+                            System.out.print("1. Checkout\n" +
+                                    "2. Back\n" +
+                                    "Enter : ");
+                            input_select = keyboard.nextLine();
+                            if (input_select.equals("1")) {
+                                store.checkoutCard(store,email);
+                                break;
+                            } else if (input_select.equals("2")){
+                                System.out.println("====================\n" +
+                                        "Add Something to Cart\n" +
+                                        "====================");
+                                break;
+                            }
+                        }
                     }
                 }else if (input_split.length == 2 && isInteger(input_split[1]) && Integer.parseInt(input_split[0]) > 0 && Integer.parseInt(input_split[0]) <= store.products.size()){
                     store.basket(store, email, input_split[0], input_split[1]);
@@ -846,7 +1014,7 @@ public class Store {
                 continue;
             }
         }
-        PrintWriter writer = new PrintWriter(new FileWriter("D:\\java\\Data_1\\Test\\src\\Home5\\CART.txt"));
+        PrintWriter writer = new PrintWriter(new FileWriter("C:\\Users\\informatics\\IdeaProjects\\Test\\src\\Home5\\CART.txt"));
         for (int i = 0; i < store.carts.size(); i++) {
             writer.println(store.carts.get(i).getIdMember() + "\t" + store.carts.get(i).getIdProduct() + "\t" + store.carts.get(i).getQuantity());
         }
@@ -861,6 +1029,20 @@ public class Store {
                 "To Adjust Quantity:\n" +
                 "\t+ to add more items: 1 +50 (Adds 50 more chips)\n" +
                 "\t- to reduce items: 1 -50 (Removes 50 chips)\n");
+    }
+
+    public void displaySearchProduct_1(Store store,String email){
+        Scanner keyboard = new Scanner(System.in);
+        System.out.println("====================");
+        System.out.println("Search Product");
+        System.out.print("====================\n" +
+                "Type Product Name : ");
+        String nameProduct = keyboard.nextLine();
+        System.out.println("====================");
+        displaySearchProduct_2(store,email,nameProduct);
+    }
+    public void displaySearchProduct_2(Store store,String email,String nameProduct){
+        store.searchProduct(store,store.getMemberEmail(email).checkRole(),nameProduct);
     }
     //End Store--------------------------------------------------------------------------------------------------------------------------
 }

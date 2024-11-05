@@ -65,7 +65,6 @@ public class Product {
                 return 0;  // ไม่มีส่วนลด
         }
     }
-
     // แสดงรายละเอียดสินค้า
     public void toStringProduct(String role) {
         double discountAmount = discountProduct(role); // Calculate discount amount
@@ -82,6 +81,18 @@ public class Product {
             String fullPrice = String.format("%.2f", this.price * 34.00);
             System.out.printf("%-20s", discount + " (" + fullPrice + ")");  // Discounted price with full price in parentheses
             System.out.printf("%-15d\n", this.quantity);  // Quantity
+        }
+    }
+    public void toStringPrice(String role){
+        double discountAmount = discountProduct(role);
+        if (role.equals("Staff") || role.equals("Regular")) {
+            System.out.printf("%-20.2f\n", this.price * 34.00);
+        } else {
+            // Display price with discount
+            double discountedPrice = (this.price * 34.00) - discountAmount;
+            String discount = String.format("%.2f", discountedPrice);
+            String fullPrice = String.format("%.2f", this.price * 34.00);
+            System.out.printf("%-20s\n", discount + " (" + fullPrice + ")");
         }
     }
 }

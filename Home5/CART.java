@@ -26,4 +26,8 @@ public class CART {
     public void setQuantity(int quantity) {
         this.quantity = quantity;
     }
+
+    public double getPrice(Store store){
+        return store.getProductId(this.idProduct).getPrice()*quantity;
+    }
 }
